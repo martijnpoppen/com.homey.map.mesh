@@ -1,0 +1,125 @@
+<html>
+
+<head>
+    <script src="https://cdn.anychart.com/releases/8.8.0/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.8.0/js/anychart-graph.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.8.0/js/anychart-data-adapter.min.js"></script>
+    <style type="text/css">
+        html,
+        body,
+        #container {
+            background-color: rgb(17, 18, 24);
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        anychart.onDocumentReady(function () {
+
+            // create a chart from the loaded data
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const base64Data = urlParams.get('data');
+            const data = JSON.parse(atob(base64Data));
+            console.log(data)
+            data.nodes.forEach((node, index) => {
+                data.nodes[index].fill = rainbow(data.nodes.length, "rgb", false)[index];
+            });
+            console.log(data)
+            var chart = anychart.graph(data);
+            chart.background().fill("#2b2b2b");
+
+            const nodes = chart.nodes();
+            // configure the labels of nodes
+            chart.nodes().labels().enabled(true);
+            chart.nodes().labels().format("{%name}");
+
+
+            nodes.normal().height(20);
+            nodes.hovered().height(30);
+            nodes.selected().height(30);
+
+            // set the fill of nodes
+            nodes.normal().stroke("white");
+            // nodes.normal().margin(0, 5)
+
+            // set the title
+            chart.title("Homey Zigbee Graph");
+
+            chart.interactivity().edges(false)
+            // draw the chart
+            chart.container("container").draw();
+            chart.layout({ iterationCount: 300 });
+
+
+        });
+
+
+        function rgbToHex (r, g, b) {
+            return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        function rgbToHsl (r, g, b) {
+            r /= 255, g /= 255, b /= 255;
+
+            var max = Math.max(r, g, b), min = Math.min(r, g, b);
+            var h, s, l = (max + min) / 2;
+
+            if (max == min) {
+                h = s = 0; // achromatic
+            } else {
+                var d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+
+                h /= 6;
+            }
+
+            return { "h": h, "s": s, "l": l };
+        }
+
+        const rainbow = function (len, type, pastel) {
+
+            var eq1 = 127
+            var eq2 = 128
+            if (len == undefined) { len = 24 };
+            if (type == undefined) { type = "rgb" };
+            if (pastel == true) { eq1 = 55; eq2 = 200 };
+            frequency = Math.PI * 2 / len;
+
+            var cvparr = [];
+            for (var i = 0; i < len; ++i) {
+                red = Math.sin(frequency * i + 2) * eq1 + eq2
+                green = Math.sin(frequency * i + 0) * eq1 + eq2
+                blue = Math.sin(frequency * i + 4) * eq1 + eq2
+
+                switch (type) {
+                    case "hex":
+                        cvparr.push({ "hex": rgbToHex(Math.round(red), Math.round(green), Math.round(blue)) });
+                        break;
+                    case "rgb":
+                        cvparr.push(`rgb(${red},${green},${blue})`);
+                        break;
+                    case "hsl":
+                        cvparr.push(rgbToHsl(Math.round(red), Math.round(green), Math.round(blue)));
+                        break;
+                }
+
+            }
+            return cvparr;
+        }
+    </script>
+</body>
+
+</html>
