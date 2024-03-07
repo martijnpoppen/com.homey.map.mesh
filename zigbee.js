@@ -3,6 +3,7 @@ const main = async function () {
 
     const zigbeeUpdate = await Homey.zigbee.runCommand({ command: 'UPDATE_NODES' });
     const data = await Homey.zigbee.getState();
+
     const homeyID = data.controllerState.panId;
 
     let nodes = Object.values(data.nodes).map((node) => ({

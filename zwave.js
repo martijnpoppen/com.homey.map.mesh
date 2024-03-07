@@ -1,10 +1,12 @@
 const main = async function () {
     console.log('Starting main function...');
-
+    
+    let state = await Homey.zwave.getState();
     let data = await Homey.zwave.runCommand({
         command: 'getNetworkTopology'
     });
-    let state = await Homey.zwave.getState();
+    
+    let failed = Homey.zwave.runCommand({command: 'getFailedNodes'});
 
     let nodes = [];
     let edges = [];
@@ -18,10 +20,15 @@ const main = async function () {
 
     for (const [key, value] of Object.entries(data)) {
         const nodeState = get(state, `zw_state.stats.node_${parseInt(key)}_network`, null);
+        let group = parseInt(key) === homeyID ? 'coordinator' : 'router'
+
+        if(value.base === true) {
+            group = 'disconnected';
+        }
 
         nodes.push({
             name: value.name,
-            group: parseInt(key) === homeyID ? 'coordinator' : 'router',
+            group,
             id: parseInt(key),
             nodeState: {
                 id: parseInt(key),
