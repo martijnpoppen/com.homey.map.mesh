@@ -1,10 +1,10 @@
-
-
 const main = async function () {
   console.log("Starting main function...");
 
-  //   let getNetworkTopology = await Homey.zwave.runCommand({command: 'getNetworkTopology'});
-  //   let state = await Homey.zwave.getState();
+  let data = await Homey.zwave.runCommand({
+    command: "getNetworkTopology",
+  });
+  let state = await Homey.zwave.getState();
 
   let nodes = [];
   let edges = [];
@@ -15,17 +15,18 @@ const main = async function () {
       homeyID = parseInt(key);
     }
 
-    
-
-    const nodeState = get(state, `zw_state.stats.node_${parseInt(key)}_network`, {})
+    const nodeState = get(
+      state,
+      `zw_state.stats.node_${parseInt(key)}_network`,
+      {}
+    );
 
     nodes.push({
       name: value.name,
       group: parseInt(key) === homeyID ? "coordinator" : "router",
       id: parseInt(key),
-      nodeState
+      nodeState,
     });
-
 
     const routes = value.props.route.reverse();
 
@@ -50,22 +51,22 @@ const main = async function () {
 };
 
 const get = function (obj, dirtyPath, defaultValue) {
-    if (obj === undefined || obj === null) return defaultValue;
-    const path = typeof dirtyPath === 'string' ? dirtyPath.split('.') : dirtyPath;
-    let objLink = obj;
-    if (Array.isArray(path) && path.length) {
-        for (let i = 0; i < path.length - 1; i++) {
-            const currentVal = objLink[path[i]];
-            if (currentVal !== undefined && currentVal !== null) {
-                objLink = currentVal;
-            } else {
-                return defaultValue;
-            }
-        }
-        const value = objLink[path[path.length - 1]];
-        return value === undefined || value === null ? defaultValue : value;
+  if (obj === undefined || obj === null) return defaultValue;
+  const path = typeof dirtyPath === "string" ? dirtyPath.split(".") : dirtyPath;
+  let objLink = obj;
+  if (Array.isArray(path) && path.length) {
+    for (let i = 0; i < path.length - 1; i++) {
+      const currentVal = objLink[path[i]];
+      if (currentVal !== undefined && currentVal !== null) {
+        objLink = currentVal;
+      } else {
+        return defaultValue;
+      }
     }
-    return defaultValue;
+    const value = objLink[path[path.length - 1]];
+    return value === undefined || value === null ? defaultValue : value;
+  }
+  return defaultValue;
 };
 
 main();
