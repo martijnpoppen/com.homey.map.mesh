@@ -40,7 +40,7 @@ const main = async function () {
                 to: parseInt(filteredRoutes[1])
             });
 
-            console.log(value.name, 'Adding edge from', parseInt(filteredRoutes[0]), 'to', parseInt(filteredRoutes[1]));
+            console.log(value.name, 'Adding edge from', parseInt(filteredRoutes[1]), 'to', parseInt(filteredRoutes[0]));
         } else if (!value.base) {
             edges.push({ from: homeyID, to: parseInt(key) });
 
