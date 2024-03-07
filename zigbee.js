@@ -45,7 +45,7 @@ const main = async function () {
       const buf = window
         .btoa(JSON.stringify({ nodes, edges }))
         .toString("base64");
-      return `https://martijnpoppen.github.io/com.homey.zigbee.mesh?data=${buf}`;
+      return `https://martijnpoppen.github.io/com.homey.map.mesh?data=${buf}`;
     }
   };
   

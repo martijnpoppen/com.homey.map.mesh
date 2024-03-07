@@ -33,6 +33,12 @@
                     data.nodes[index].height = 30
                 }
                 data.nodes[index].fill = rainbow(data.nodes.length, "rgb", false)[index];
+
+                if(data.nodes[index].nodeState) {
+                    data.nodes[index].nodeState = `${data.nodes[index].name} \n\n ${JSON.stringify(data.nodes[index].nodeState, null, 2)}`
+                } else {
+                    data.nodes[index].nodeState = data.nodes[index].name
+                }
             });
             console.log(data)
 
@@ -41,7 +47,7 @@
             var chart = anychart.graph(data);
             var nodes = chart.nodes();
 
-            nodes.tooltip().format("{%name}");
+            nodes.tooltip().format("{%nodeState}");
 
             nodes.labels().enabled(true);
             nodes.labels().format("{%name}");
