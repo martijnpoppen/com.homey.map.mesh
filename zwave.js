@@ -20,11 +20,11 @@ const main = async function () {
 
     for (const [key, value] of Object.entries(data)) {
         const nodeState = get(state, `zw_state.stats.node_${parseInt(key)}_network`, null);
-        let group = parseInt(key) === homeyID ? 'coordinator' : 'router'
+        let group = parseInt(key) === homeyID ? 'coordinator' : 'router';
 
-        if(value.base === true) {
-            group = 'disconnected';
-        }
+        // if (value.base === true) {
+        //     group = 'disconnected';
+        // }
 
         nodes.push({
             name: value.name,
@@ -36,18 +36,21 @@ const main = async function () {
             }
         });
 
+
         const routes = value.props.route.reverse();
         let filteredRoutes = routes.filter((route) => route !== 0);
 
         if (!value.base && filteredRoutes.length) {
             filteredRoutes.unshift(parseInt(key));
             // start from 1 because we want to start from the second element
-            edges.push({
-                from: parseInt(filteredRoutes[0]),
-                to: parseInt(filteredRoutes[1])
-            });
+                for (let i = 1; i < filteredRoutes.length; i++) {
+                    edges.push({
+                        from: parseInt(filteredRoutes[i]),
+                        to: parseInt(filteredRoutes[i - 1])
+                    });
 
-            console.log(value.name, 'Adding edge from', parseInt(filteredRoutes[1]), 'to', parseInt(filteredRoutes[0]));
+                    console.log(value.name, 'Adding edge from', parseInt(filteredRoutes[i]), 'to', parseInt(filteredRoutes[i - 1]));
+                }
         } else if (!value.base) {
             edges.push({ from: homeyID, to: parseInt(key) });
 
