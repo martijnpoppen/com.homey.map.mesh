@@ -24,71 +24,75 @@
 
             // create a chart from the loaded data
             const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString);
-            const base64Data = urlParams.get('data');
-            const data = JSON.parse(atob(base64Data));
-            console.log(data)
-            data.nodes.forEach((node, index) => {
-                if (index === 0) {
-                    data.nodes[index].height = 30
+
+            if (window.location.hash) {
+                const base64Data = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+                const data = JSON.parse(atob(base64Data));
+                console.log(data)
+                data.nodes.forEach((node, index) => {
+                    if (index === 0) {
+                        data.nodes[index].height = 30
+                    }
+                    data.nodes[index].fill = rainbow(data.nodes.length, "rgb", false)[index];
+
+                    if (data.nodes[index].nodeState) {
+                        data.nodes[index].nodeState = `${data.nodes[index].name} \n\n ${JSON.stringify(data.nodes[index].nodeState, null, 2)}`
+                    } else {
+                        data.nodes[index].nodeState = data.nodes[index].name
+                    }
+                });
+                console.log(data)
+
+                // create chart
+
+                var chart = anychart.graph(data);
+                var nodes = chart.nodes();
+
+                nodes.tooltip().format("{%nodeState}");
+
+                nodes.labels().enabled(true);
+                nodes.labels().format("{%name}");
+                nodes.labels().fontColor("white");
+
+
+                var router = chart.group("router");
+                var coordinator = chart.group("coordinator");
+                var endDevice = chart.group("enddevice");
+
+                if (router && router.normal()) {
+                    router.normal().shape("circle");
+                    router.normal().height(23);
+                    router.hovered().height(30);
+                    router.selected().height(30);
                 }
-                data.nodes[index].fill = rainbow(data.nodes.length, "rgb", false)[index];
 
-                if(data.nodes[index].nodeState) {
-                    data.nodes[index].nodeState = `${data.nodes[index].name} \n\n ${JSON.stringify(data.nodes[index].nodeState, null, 2)}`
-                } else {
-                    data.nodes[index].nodeState = data.nodes[index].name
+                if (coordinator && coordinator.normal()) {
+                    coordinator.normal().shape("diamond");
                 }
-            });
-            console.log(data)
 
-            // create chart
-
-            var chart = anychart.graph(data);
-            var nodes = chart.nodes();
-
-            nodes.tooltip().format("{%nodeState}");
-
-            nodes.labels().enabled(true);
-            nodes.labels().format("{%name}");
-            nodes.labels().fontColor("white");
+                if (endDevice && endDevice.normal()) {
+                    endDevice.normal().shape("square");
+                    endDevice.normal().height(15);
+                    endDevice.hovered().height(20);
+                    endDevice.selected().height(20);
+                }
 
 
-            var router = chart.group("router");
-            var coordinator = chart.group("coordinator");
-            var endDevice = chart.group("enddevice");
+                nodes.normal().stroke("white");
+                nodes.hovered().stroke("white");
+                nodes.selected().stroke("white");
 
-            if (router && router.normal()) {
-                router.normal().shape("circle");
-                router.normal().height(23);
-                router.hovered().height(30);
-                router.selected().height(30);
+                // set the title
+                chart.title("Homey Route Map");
+
+
+                chart.background().fill("#2b2b2b");
+                chart.interactivity().edges(false)
+
+                chart.container("container").draw();
+            } else {
+                alert('invalid data')
             }
-
-            if (coordinator && coordinator.normal()) {
-                coordinator.normal().shape("diamond");
-            }
-
-            if (endDevice && endDevice.normal()) {
-                endDevice.normal().shape("square");
-                endDevice.normal().height(15);
-                endDevice.hovered().height(20);
-                endDevice.selected().height(20);
-            }
-
-
-            nodes.normal().stroke("white");
-            nodes.hovered().stroke("white");
-            nodes.selected().stroke("white");
-
-            // set the title
-            chart.title("Homey Route Map");
-
-
-            chart.background().fill("#2b2b2b");
-            chart.interactivity().edges(false)
-
-            chart.container("container").draw();
         });
 
         function rgbToHex (r, g, b) {
