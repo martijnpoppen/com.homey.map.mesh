@@ -36,9 +36,9 @@
                     data.nodes[index].fill = rainbow(data.nodes.length, "rgb", false)[index];
 
                     if (data.nodes[index].nodeState) {
-                        data.nodes[index].nodeState = `${data.nodes[index].name} \n\n ${JSON.stringify(data.nodes[index].nodeState, null, 2)}`
+                        data.nodes[index].nodeState = `${decodeURIComponent(data.nodes[index].name)} \n\n ${JSON.stringify(data.nodes[index].nodeState, null, 2)}`
                     } else {
-                        data.nodes[index].nodeState = data.nodes[index].name
+                        data.nodes[index].nodeState = decodeURIComponent(data.nodes[index].name);
                     }
                 });
                 console.log(data)

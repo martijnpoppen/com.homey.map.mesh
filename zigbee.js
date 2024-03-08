@@ -7,7 +7,7 @@ const main = async function () {
     const homeyID = data.controllerState.panId;
 
     let nodes = Object.values(data.nodes).map((node) => ({
-        name: node.name,
+        name: encodeURIComponent(node.name),
         group: node.type.toLowerCase(),
         id: node.nwkAddr,
         nodeState: {
@@ -18,7 +18,7 @@ const main = async function () {
 
     nodes = [
         {
-            name: 'Homey',
+            name: encodeURIComponent('Homey'),
             id: homeyID,
             group: 'coordinator',
             nodeState: {

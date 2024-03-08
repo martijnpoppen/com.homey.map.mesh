@@ -27,7 +27,7 @@ const main = async function () {
         // }
 
         nodes.push({
-            name: value.name,
+            name: encodeURIComponent(value.name),
             group,
             id: parseInt(key),
             nodeState: {
@@ -57,7 +57,7 @@ const main = async function () {
             console.log(value.name, 'Adding edge from', homeyID, 'to', parseInt(key));
         }
     }
-
+console.log({ nodes, edges })
     const buf = window.btoa(JSON.stringify({ nodes, edges })).toString('base64');
     return `https://martijnpoppen.github.io/com.homey.map.mesh#${buf}`;
 };
