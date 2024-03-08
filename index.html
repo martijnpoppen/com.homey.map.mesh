@@ -40,6 +40,8 @@
                     } else {
                         data.nodes[index].nodeState = decodeURIComponent(data.nodes[index].name);
                     }
+
+                    data.nodes[index].name = decodeURIComponent(data.nodes[index].name);
                 });
                 console.log(data)
 
